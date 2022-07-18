@@ -7,6 +7,8 @@ from abc import ABC, abstractmethod
 import re
 from abc import ABC
 import time, sys
+import image2console
+from PIL import Image
 
 console = Console()
 layout = Layout()
@@ -24,6 +26,7 @@ Abstract class for artistic elements, including AsciiArt and images.
 '''
 
 class Art(ABC):
+
     def __init__(self, filename):
 
         if not str(filename):
@@ -36,10 +39,6 @@ class Art(ABC):
         name_extension = re.split("\.", filename) #split the string at the last dot
         self._name = name_extension[0] #first part is the name
         self._extension = name_extension[1] # last part is the extenion
-
-    @abstractmethod
-    def draw(self, filename, color=""):
-        pass
     
     #stringify parameters for logging
     @abstractmethod
@@ -50,6 +49,58 @@ class Art(ABC):
             "EXTENSION: " + self._extension + "\n"
         )
         return output
+
+#======================================================================
+#======================================================================
+
+"""
+CLASS ELDRITCHIMAGE
+This is a wrapper for the image2console class.
+https://github.com/gaba5/Image2Console
+Image2console can print colored images to the screen using pixel glyphs.
+Original repo only accepts jpg, I updated to accept png.
+The module itself is very short but it leans on several complex packages,
+including NumPy and colr, to match ascii glyphs to pixel hues and values.
+This wrapper will let me assign other attributes to the image that
+are unique to my program (not yet implemented)
+"""
+
+class EldritchImage(Art):
+    
+    _path = ".\\images\\" # static variable for filepath
+    
+    def __init__(self, filename):
+        super().__init__(filename)
+        self._filepath = EldritchImage._path + str(filename)
+        # ._image is a string of colored ascii glyphs
+        img = Image.open(self._filepath)
+        self._dimX, self._dimY = img.size
+        img.close()
+
+    def draw(self, numColumns=-1):
+        colWidth = self._dimX
+        if numColumns == -1:
+            pass
+        else:
+            if int(numColumns) > 0 and int(numColumns) < 65:
+                colWidth = numColumns
+        print(image2console.string_image(self._filepath, size=colWidth))
+
+    
+    def __str__(self) -> str:
+        output = (
+            super().__str__() +
+            "DIM X: " + str(self._dimX) + "\n" +
+            "DIM Y: " + str(self._dimY) + "\n" +
+            "FILEPATH: " + self._filepath + "\n" +
+            "PATH: " + EldritchImage._path + "\n"
+        )
+        return output
+    
+
+
+#======================================================================
+#======================================================================
 
 '''
 CLASS ASCIIART
@@ -70,11 +121,13 @@ class AsciiArt(Art):
         self._cols = int(cols)
         self._rows = int(rows)
 
-    def draw(self, color):
+    def draw(self, color=""):
         lst = []
         with open(self._filepath, "r") as f:
             for line in f:
-                console.print(line, style=f"{color}", end='') # each line already ends with \n so we change the end character of print() from default \n to ''.
+                console.print(line, style=f"{color}", end='')
+                # each line already ends with \n so we change
+                # the end character of print() from default \n to ''.
         print("\n")
 
     #stringify parameters for logging
@@ -87,22 +140,8 @@ class AsciiArt(Art):
         )
         return output
 
-"""
-class AsciiArt:
-    _path = ".\\acii-art\\" # "static" variable for filepath
-    def __init__(self, filename, cols, rows):
-        self._filename = str(filename)
-        self._filepath = self._path + self._filename
-        self._cols = int(cols)
-        self._rows = int(rows)
-    
-    def draw(self, color):
-        lst = []
-        with open(self._filepath, "r") as f:
-            for line in f:
-                console.print(line, style=f"{color}", end='') # each line already ends with \n so we change the end character of print() from default \n to ''.
-        print("\n")
-"""
+#======================================================================
+#======================================================================
 
 class Script(ABC):
 
