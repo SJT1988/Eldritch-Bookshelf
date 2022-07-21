@@ -1,5 +1,5 @@
 import os
-from Library import Book
+from Library import *
 from Content import *
 import rich
 from rich.console import Console
@@ -55,10 +55,12 @@ def clearScreen():
 #=========================================================
 
 if __name__ == "__main__":
-
     clearScreen()
-    maximize_console()
+    #maximize_console()
     
+    bookShelf = Bookshelf()
+    #images
+    """
     carcosa = EldritchImage("carcosa.png")
     print(carcosa)
     carcosa.draw(60)
@@ -66,7 +68,9 @@ if __name__ == "__main__":
     portrait = EldritchImage("theYellowPortrait.png")
     print(portrait)
     portrait.draw(60)
-
+    """
+    
+    #poems, ascii art
     """
     script.print_stanza(0)
     skulldrip = AsciiArt("skull-drip_50x25.txt", 50, 25)
