@@ -186,7 +186,7 @@ class Script(ABC):
     
     def print_stanza(self,stanza):
         s = Script.cassildas_song
-        for i in range(len(s[stanza])-1):
+        for i in range(3):
             time.sleep(0.8)
             Script.typewriter(s[stanza][i],"italic blue")
             sys.stdout.flush()

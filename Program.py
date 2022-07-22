@@ -4,6 +4,7 @@ from Content import *
 import rich
 from rich.console import Console
 from rich.layout import Layout
+from State import State
 #-------------------------------
 #These are just to make the console window full-size
 import ctypes
@@ -59,7 +60,31 @@ if __name__ == "__main__":
     #maximize_console()
     
     bookShelf = BookShelf()
+    mngr = State()
+    state = mngr.states['main menu']
+
+    while True:
+        mngr.progress_update(state)
+        print(state['message'])
+        print("\n\n")
+        if state is mngr.states['quit']:
+            break
+
+        for i, opt in enumerate(state['options']):
+            print(f"{i+1}. {opt[0]}")
+        
+        while True:
+            answer = input(">>> ")
+            if mngr.validate(answer, state['options']):
+                state = mngr.states[state['options'][int(answer)-1][1]]
+                time.sleep(1.0)
+                clearScreen()
+                break
+            else:
+                print('\n'.join(["Type the number for one of the given options",
+                "and press 'ENTER'."]))
     
+
     #images
     """
     carcosa = EldritchImage("carcosa.png")
@@ -75,16 +100,22 @@ if __name__ == "__main__":
     
     # script.print_stanza(0)
     # skulldrip = AsciiArt("skull-drip_50x25.txt", 50, 25)
+    # time.sleep(0.5)
     # skulldrip.draw("red")
+    # time.sleep(0.25)
     
     # script.print_stanza(1)
     # eyeOfRa = AsciiArt("eye-of-ra_50x20.txt", 50, 20)
+    # time.sleep(0.5)
     # eyeOfRa.draw("purple")
+    # time.sleep(0.25)
 
     # script.print_stanza(2)
     # yellowSign = AsciiArt("yellow-sign_50x24.txt", 50, 24)
+    # time.sleep(0.5)
     # yellowSign.draw("yellow")
+    # time.sleep(0.25)
     
     # script.print_stanza(3)
     # mystring = input()
-    
+    exit(0)
