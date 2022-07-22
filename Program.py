@@ -52,20 +52,65 @@ def maximize_console(lines=None):
 def clearScreen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def intro():
+    clearScreen()
+    maximize_console()
 
+    # carcosa = EldritchImage("carcosa.png")
+    # carcosa.draw(60)
+
+    time.sleep(1)
+    #poems, ascii art
+    
+    script.print_stanza(0)
+    skulldrip = AsciiArt("skull-drip_50x25.txt", 50, 25)
+    time.sleep(0.5)
+    skulldrip.draw("red")
+    time.sleep(0.25)
+    
+    script.print_stanza(1)
+    eyeOfRa = AsciiArt("eye-of-ra_50x20.txt", 50, 20)
+    time.sleep(0.5)
+    eyeOfRa.draw("purple")
+    time.sleep(0.25)
+
+    script.print_stanza(2)
+    yellowSign = AsciiArt("yellow-sign_50x24.txt", 50, 24)
+    time.sleep(0.5)
+    yellowSign.draw("yellow")
+    time.sleep(0.25)
+    
+    script.print_stanza(3)
+    mystring = input()
+
+    time.sleep(2)
+    input()
+    clearScreen()
 #=========================================================
 
 if __name__ == "__main__":
-    clearScreen()
-    #maximize_console()
+    #intro()
     
     bookShelf = BookShelf()
     mngr = State()
     state = mngr.states['main menu']
 
     while True:
+
         mngr.progress_update(state)
-        print(state['message'])
+        # this makes us print the regular way if we are
+        # drawing a table.
+        if mngr._current_state not in [
+            "sort title",
+            "sort auth first",
+            "sort auth last",
+            "sort color",
+            "sort length"
+        ]:
+            for line in state['message']:
+                Script.typewriter([line],"yellow italic", 0.01)
+        else:
+            print(state['message'])
         print("\n\n")
         if state is mngr.states['quit']:
             break
@@ -83,7 +128,6 @@ if __name__ == "__main__":
             else:
                 print('\n'.join(["Type the number for one of the given options",
                 "and press 'ENTER'."]))
-    
 
     #images
     """

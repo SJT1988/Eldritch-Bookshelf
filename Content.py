@@ -172,6 +172,12 @@ class Script(ABC):
             ]
     ]
 
+    rush = ["I pray God will curse the writer,",
+            "\nas the writer has cursed the world with this beautiful,"
+            "\nstupendous creation, terrible in its simplicity,",
+            "\nirresistible in its truth--",
+            "\na world which now trembles before the King in Yellow."]
+
     def __init__(self):
         pass
     

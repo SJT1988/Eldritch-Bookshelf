@@ -1,4 +1,5 @@
 import os
+import re
 from Library import *
 from collections import OrderedDict
 
@@ -9,14 +10,27 @@ from collections import OrderedDict
 class State:
 
     states = {}
+    #idx_pg = []
     #=========================================================
-    #VALIDATE(var ans, str[] opt)
-    @classmethod
-    def validate(cls, ans, opt) -> bool:
+    #VALIDATE(var ans, str[] opt, str state)
+    
+    def validate(self, ans, opt) -> bool:
         if int(ans) in range(1,len(opt)+1):
+            self._current_state = opt[int(ans)-1][1]
+            print(self._current_state)
             return True
         else:
             return False
+        
+        
+        # if re.match('[0-9]{1,2} [0-9]{1,3}', str(ans)):
+        #     idx = int(str(ans).split()[0])
+        #     pg = int(str(ans).split()[1])
+        #     if pg > 0 and pg <= BookShelf._books[idx].numPages:
+        #         State.idx_pg = [idx,pg]
+        #         return True
+        # else:
+        #     return False
 
     #=========================================================
     # PROGRESS_UPDATE()
@@ -96,6 +110,9 @@ class State:
                 return f"clue {self.current_clue()[1]}"
 
     #=========================================================
+    # DISPLAY_PAGE
+
+    #=========================================================
 
     def __init__(self):
 
@@ -117,8 +134,8 @@ class State:
             'wrote stanza 4': False
         })
         #=========================================================
-        # INITIALIZE STATES    
-
+        # INITIALIZE STATES
+        self._current_state = ""
         State.states = states = {
             "main menu": {
                 "message": "M A I N   M E N U",
@@ -133,15 +150,14 @@ class State:
                 ]),
                 "options": [
                     ("Read the Black Ledger", self.black_ledger_state()),
-                    ("Read a book", "read a book"),
-                    ("Sort the books", "sorting screen"),
+                    ("Search Books", "search menu"),
                     ("Write in the Black Ledger", "wLedger conditions"),
                     ("Quit", "main menu") 
                 ]
             },
             "start": {
                 "message": "\n".join([
-                    "When you first started working for the Rare Book Collector",
+                    "When you first started working for the Rare Book Collector,",
                     "each day was joyful. You were thrilled to catalog exotic",
                     "titles and study their forbidden contents.",
                     "",
@@ -151,7 +167,7 @@ class State:
                     "The cover's eldritch patterns give you a headache.",
                     "",
                     "You have no idea who wrote the mad scrawlings within.",
-                    "The ethereal landscapes within confound, compell and repulse you.",
+                    "The ethereal landscapes inside confound, compell and repulse you.",
                     "You swore to never read another page, but they call to you--",
                     "in your quiet moments. In your sleep. In your mind."
                 ]),
@@ -166,6 +182,7 @@ class State:
                     "His sigil could raise the dead and bend minds to his will.",
                     "He claimed to be a god, but his dark power poisoned all who embraced it.",
                     "He destroyed all others who resisted, but me, he made an example of.",
+                    "",
                     "I am now a prisoner in these pages.",
                     "You must break the curse so I can rescue my beloved."
                 ]),
@@ -237,11 +254,52 @@ class State:
                 ]),
                 "options": [("This isn't what I'm looking for (go back).", "hub")]
             },
+            "search menu":{
+                "message": "S O R T    B O O K S H E L F",
+                "options": [
+                    ("Read a book", "read menu"),
+                    ("Sort by Title", "sort title"),
+                    ("Sort by Author - First", "sort auth first"),
+                    ("Sort by Author - Last", "sort auth last"),
+                    ("Sort by Color", "sort color"),
+                    ("Sort by Length", "sort length"),
+                    ("Back", "hub")
+                ]
+            },
+            #Brute forcing sort screens:
+            "sort title":{
+                "message": BookShelf.make_table(1),
+                "options": [("Back", "search menu")]
+            },
+            "sort auth first":{
+                "message": BookShelf.make_table(2),
+                "options": [("Back", "search menu")]
+            },
+            "sort auth last":{
+                "message": BookShelf.make_table(3),
+                "options": [("Back", "search menu")]
+            },
+            "sort color":{
+                "message": BookShelf.make_table(4),
+                "options": [("Back", "search menu")]
+            },
+            "sort length":{
+                "message": BookShelf.make_table(5),
+                "options": [("Back", "search menu")]
+            },
+
             "dead": { 
                 "message": "\n".join([
                     "YOU DIED"
                 ]),
             "options": []
+            },
+            "leave 1": {
+                "message": "\n".join([
+                    "The player returned to his home planet and died.",
+                    ":P"
+                ]),
+                "options": [("YOU DIED", "main menu")]
             },
             "quit": { #state exists only to trigger program closing
                 "message": "",

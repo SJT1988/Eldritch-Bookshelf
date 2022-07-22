@@ -128,10 +128,11 @@ class BookShelf():
             BookShelf._books.sort(key=lambda book: book.numPages)
         elif param_index == 11:
             BookShelf._books.sort(key=lambda book: book.keyPage)
+        #secret
         elif param_index == 12:
             BookShelf._books.sort(key=lambda book: book.event)
         else:
-            print("ERROR: param_index must be an int from 1 to 4.")
+            print("ERROR: param_index must be an int from 1 to 5.")
             return
         # update index:
         for i in range(len(BookShelf._books)):
@@ -155,6 +156,20 @@ class BookShelf():
         #     table.append([str(book.index),book.title,book.author,book.color,
         #     str(book.numPages),str(book.keyPage),str(book.event)])
         print(tabulate(table, headers ="firstrow", tablefmt="plain"))
+
+    @staticmethod
+    def make_table(sort_indx=0):
+        if sort_indx != 0:
+            BookShelf.sort_bookshelf(sort_indx)
+        table = [['INDEX','TITLE','AUTHOR','COLOR','NUMPAGES'],
+        ]
+        for book in BookShelf._books:
+            table.append([str(book.index),book.title,book.author,
+            book.color,str(book.numPages)])
+        tbl = tabulate(table, headers ="firstrow", tablefmt="plain")
+        with open('table.txt', 'w') as f:
+            f.write(tbl)
+        return tbl
 
 
 #======================================================================
