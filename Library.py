@@ -1,27 +1,34 @@
 import random
-import csv
-
+from tabulate import tabulate
 #======================================================================
 #======================================================================
 
-class Bookshelf:
+class BookShelf():
     
     _titlesFile = "randTitles.txt"
     _authorsFile = "randNames.txt"
     _books = []
+    _SIZE = 100
+    _e_books = []
+    _clue_order = []
     
     #======================================================================
 
     def __init__(self):
         
-        _randTitles = Bookshelf.rand_list_from_file(Bookshelf._titlesFile)
-        _randAuthors = Bookshelf.rand_list_from_file(Bookshelf._authorsFile)
-        _randColors = Bookshelf.rand_list_from_list(["red,","green","blue","yellow","orange","purple","black","white"],100)
-        _randPages = Bookshelf.rand_list_of_pagenums(1,199,100)
+        BookShelf._clue_order = ['A','B','C','D'] # used to order clue events
+        random.shuffle(BookShelf._clue_order)
 
-        
-        # Generate 100 random books!
-        for i in range(100):
+        _randTitles = BookShelf.rand_list_from_file(BookShelf._titlesFile)
+        _randAuthors = BookShelf.rand_list_from_file(BookShelf._authorsFile)
+        _randColors = BookShelf.rand_list_from_list(["red,","green","blue",
+        "yellow","orange","purple","black","white"],BookShelf._SIZE)
+        _randPages = BookShelf.rand_list_of_pagenums(1,199,BookShelf._SIZE)
+
+        BookShelf._books = []
+
+        # Generate _SIZE random books!
+        for i in range(BookShelf._SIZE):
             book = Book(
                 _randTitles[i],
                 _randAuthors[i],
@@ -30,15 +37,32 @@ class Bookshelf:
                 _randPages[i] + random.randint(10,50),
                 i
             )
-            Bookshelf._books.append(book)
-        for x in Bookshelf._books:
-            print(x)
+            BookShelf._books.append(book)
+        BookShelf.choose_event_books()
+    
+    #======================================================================
+    # CHOOSE_EVENT_BOOKS()
+    # Determines which 4 books from BookShelf._books will be marked to
+    # "contain" stanzas by changing their self.event parameter from -1 to
+    # 1, 2, 3, or 4. These books are copied into BookShelf.e_books
+    # so that the State class can easily reference their parameters for
+    # clue descriptions.
+
+    @staticmethod
+    def choose_event_books():
+        # randomly pick 4 books' starting indices:
+        e_indices = random.sample(range(BookShelf._SIZE),k=4)
+        # reassign original books' event indices to 1-4,
+        # and copy them into BookShelf.e_books:
+        for i in range(4):
+            BookShelf._books[e_indices[i]].event = i+1
+            BookShelf._e_books.append(BookShelf._books[e_indices[i]])
     
     #======================================================================
     # RAND_LIST_FROM_FILE(str file) -> str[]
     # takes in the filename of a list of strings (titles, authors, etc.)
     # and returns a shuffled version of that list.
- 
+
     @staticmethod
     def rand_list_from_file(file):
         
@@ -75,8 +99,63 @@ class Bookshelf:
 
     @staticmethod
     def rand_list_of_pagenums(lowerBound, upperBound, listLength):
-
         return random.choices(range(lowerBound,upperBound), k=listLength)
+
+    #=====================================================================
+    # SORT_BOOKSHELF(int param_index)
+    # sorts the bookshelf by the parameter associated with the given index:
+    # 1 - Title
+    # 2 - Author - First
+    # 3 - Author - Last
+    # 4 - Color
+    # 5 - NumPages
+    # (Secret):
+    # 11 - PageKey
+    # 12 - Event
+
+    @staticmethod
+    def sort_bookshelf(param_index):
+
+        if param_index == 1:
+            BookShelf._books.sort(key=lambda book: book.title)
+        elif param_index == 2:
+            BookShelf._books.sort(key=lambda book: book.author)
+        elif param_index == 3:
+            BookShelf._books.sort(key=lambda book: book.author.split(" ")[-1])
+        elif param_index == 4:
+            BookShelf._books.sort(key=lambda book: book.color)
+        elif param_index == 5:
+            BookShelf._books.sort(key=lambda book: book.numPages)
+        elif param_index == 11:
+            BookShelf._books.sort(key=lambda book: book.keyPage)
+        elif param_index == 12:
+            BookShelf._books.sort(key=lambda book: book.event)
+        else:
+            print("ERROR: param_index must be an int from 1 to 4.")
+            return
+        # update index:
+        for i in range(len(BookShelf._books)):
+            BookShelf._books[i]._index = BookShelf._books.index(BookShelf._books[i])
+
+    #=====================================================================
+    # PRINT_BOOKSHELF()
+    # Prints all bookshelf entries in its current order.
+    # Full-version with spoiler fields (for debugging) are commented out.
+    # NOTE: fancier table formats are bugged. They stop printing halfway.
+
+    @staticmethod
+    def print_bookshelf():
+        # table = ['INDEX','TITLE','AUTHOR','COLOR','NUMPAGES','KEYPAGE','EVENT'],
+        table = [['INDEX','TITLE','AUTHOR','COLOR','NUMPAGES'],
+        ]
+        for book in BookShelf._books:
+            table.append([str(book.index),book.title,book.author,
+            book.color,str(book.numPages)])
+        # for book in BookShelf._books:
+        #     table.append([str(book.index),book.title,book.author,book.color,
+        #     str(book.numPages),str(book.keyPage),str(book.event)])
+        print(tabulate(table, headers ="firstrow", tablefmt="plain"))
+
 
 #======================================================================
 #======================================================================
@@ -90,6 +169,7 @@ class Book:
         self._keyPage = int(keyPage)
         self._numPages = int(numPages)
         self._index = int(index)
+        self._event = -1
 
     # Accessor functions
     
@@ -124,6 +204,11 @@ class Book:
     def set_index(self, index):
         self._index = int(index)
 
+    def get_event(self):
+        return self._event
+    def set_event(self, event):
+        self._event = event
+
     # Property Functions
     
     title = property(get_title,set_title)
@@ -132,14 +217,34 @@ class Book:
     keyPage = property(get_keyPage,set_keyPage)
     numPages = property(get_numPages,set_numPages)
     index = property(get_index,set_index)
+    event = property(get_event, set_event)
+
+    # Other Functions
+
+    #======================================================================
+    # Returns the punctuated initials of the author of the book
+    # that calls it.
+     
+    def get_initials(self) -> str:
+
+        first_last = self.author.split(" ")
+        return first_last[0][0] + '.' + first_last[1][0] + '.'
+
+    #======================================================================
+    # __STR__() -> str
+    # String typecast overload. Best for a single book. If you want to
+    # print data from every book in the bookshelf, use
+    # BOOKSHELF.PRINT_BOOKSHELF()
 
     def __str__(self):
+
         output =(
-            "TITLE: " + self._title + "\n" +
-            "AUTHOR: " + self._author + "\n" +
-            "COLOR: " + self._color + "\n" +
-            "NUMPAGES: " + str(self._numPages) + "\n" +
-            "KEY PAGE: " + str(self._keyPage) + "\n" +
-            "INDEX: " + str(self._index) + "\n"
+            "TITLE: " + self.title + "\n" +
+            "AUTHOR: " + self.author + "\n" +
+            "COLOR: " + self.color + "\n" +
+            "NUMPAGES: " + str(self.numPages) + "\n" +
+            "KEYPAGE: " + str(self.keyPage) + "\n" +
+            "INDEX: " + str(self.index) + "\n" +
+            "EVENT: " + str(self.event) + "\n"
         )
         return output

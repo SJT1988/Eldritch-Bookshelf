@@ -58,7 +58,8 @@ if __name__ == "__main__":
     clearScreen()
     #maximize_console()
     
-    bookShelf = Bookshelf()
+    bookShelf = BookShelf()
+    
     #images
     """
     carcosa = EldritchImage("carcosa.png")
@@ -71,19 +72,19 @@ if __name__ == "__main__":
     """
     
     #poems, ascii art
-    """
-    script.print_stanza(0)
-    skulldrip = AsciiArt("skull-drip_50x25.txt", 50, 25)
-    skulldrip.draw("red")
     
-    script.print_stanza(1)
-    eyeOfRa = AsciiArt("eye-of-ra_50x20.txt", 50, 20)
-    eyeOfRa.draw("purple")
+    # script.print_stanza(0)
+    # skulldrip = AsciiArt("skull-drip_50x25.txt", 50, 25)
+    # skulldrip.draw("red")
+    
+    # script.print_stanza(1)
+    # eyeOfRa = AsciiArt("eye-of-ra_50x20.txt", 50, 20)
+    # eyeOfRa.draw("purple")
 
-    script.print_stanza(2)
-    yellowSign = AsciiArt("yellow-sign_50x24.txt", 50, 24)
-    yellowSign.draw("yellow")
+    # script.print_stanza(2)
+    # yellowSign = AsciiArt("yellow-sign_50x24.txt", 50, 24)
+    # yellowSign.draw("yellow")
     
-    script.print_stanza(3)
-    mystring = input()
-    """
+    # script.print_stanza(3)
+    # mystring = input()
+    

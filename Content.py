@@ -144,9 +144,8 @@ class AsciiArt(Art):
 #======================================================================
 
 class Script(ABC):
-
-    def __init__(self):
-        self.cassildas_song = [
+    
+    cassildas_song = [
             [
                 "Along the shore the cloud waves break,",
                 "\nThe twin suns sink behind the lake,",
@@ -171,37 +170,40 @@ class Script(ABC):
                 "\nShall dry and die in",
                 "\n\tLost Carcosa.\n\n"
             ]
-        ]
+    ]
+
+    def __init__(self):
+        pass
     
 
-    """
-    PRINT_STANZA(self, INT stanza)
-        Function designed specifically for printing
-        Cassilda's Song. The song contains 4 stanzas
-        and 4 lines per stanza. The song is "typed"
-        in real-time in the console. This function
-        controls the pauses between lines.
-    """
+    
+    # PRINT_STANZA(self, INT stanza)
+    #     Function designed specifically for printing
+    #     Cassilda's Song. The song contains 4 stanzas
+    #     and 4 lines per stanza. The song is "typed"
+    #     in real-time in the console. This function
+    #     controls the pauses between lines.
+    
     def print_stanza(self,stanza):
-        s = self.cassildas_song
+        s = Script.cassildas_song
         for i in range(len(s[stanza])-1):
             time.sleep(0.8)
-            Script.typingPrint(s[stanza][i],"italic blue")
+            Script.typewriter(s[stanza][i],"italic blue")
             sys.stdout.flush()
         time.sleep(0.4)
-        Script.typingPrint(s[stanza][-1],"italic blue")
+        Script.typewriter(s[stanza][-1],"italic blue")
 
 
-    """
-    TYPINGPRINT(STR text, STR textstyle, FLOAT pause)
-        Function for making strings print in real time
-        as if it were typed by a type writer.
-        The 'textstyle' parameter is any string that
-        can be interpreted by the 'Rich' (rich text)
-        module. The pause between characters is 0.05
-        seconds, by default.
-    """
-    def typingPrint(text, textstyle, pause=0.05):
+    
+    # TYPINGPRINT(STR text, STR textstyle, FLOAT pause)
+    #     Function for making strings print in real time
+    #     as if it were typed by a type writer.
+    #     The 'textstyle' parameter is any string that
+    #     can be interpreted by the 'Rich' (rich text)
+    #     module. The pause between characters is 0.05
+    #     seconds, by default.
+    
+    def typewriter(text, textstyle, pause=0.05):
         for character in text:
             console.print(character, style=f"{textstyle}", end='')
             sys.stdout.flush()
